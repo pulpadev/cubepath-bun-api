@@ -1,5 +1,6 @@
 import { config } from "../config";
-import { sendChatCompletionStream, type ChatInputMessage } from "../services/openrouter";
+import { sendChatCompletionStream } from "../services/chat-router";
+import { type ChatInputMessage } from "../services/chat-types";
 import { createSseResponse, encodeSseEvent, errorResponse, readJsonBody } from "../utils/http";
 
 type ChatBody = {
@@ -36,21 +37,24 @@ export async function handleChat(request: Request): Promise<Response> {
 			);
 		}
 
-		const completionStream = await sendChatCompletionStream({
+		const selection = await sendChatCompletionStream({
 			messages,
 			signal: request.signal,
 		});
+
+		console.log(`[chat] streaming provider=${selection.provider} model=${selection.model}`);
 
 		const stream = new ReadableStream<Uint8Array>({
 			async start(controller) {
 				try {
 					controller.enqueue(
 						encodeSseEvent("start", {
-							model: config.openRouterModel,
+							provider: selection.provider,
+							model: selection.model,
 						}),
 					);
 
-					for await (const chunk of completionStream) {
+					for await (const chunk of selection.stream) {
 						const choice = chunk.choices[0];
 						const content = choice?.delta?.content;
 
@@ -99,7 +103,9 @@ export async function handleChat(request: Request): Promise<Response> {
 		}
 
 		if (error instanceof Error) {
-			const status = error.message.includes("OPENROUTER_API_KEY") ? 500 : 502;
+			const status = /(OPENROUTER_API_KEY|GROQ_API_KEY|CEREBRAS_API_KEY|No chat provider)/.test(error.message)
+				? 500
+				: 502;
 			return errorResponse(status, error.message);
 		}
 

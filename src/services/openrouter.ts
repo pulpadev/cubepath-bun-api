@@ -1,25 +1,16 @@
 import { OpenRouter } from "@openrouter/sdk";
 import { config } from "../config";
-
-export type ChatInputMessage = {
-	role: "system" | "user" | "assistant";
-	content: string;
-};
-
-export type ChatCompletionStreamChunk = {
-	choices: Array<{
-		delta: {
-			content?: string | null;
-		};
-		finishReason?: unknown;
-	}>;
-	error?: {
-		message: string;
-		code: number;
-	};
-};
+import { type ChatCompletionStreamChunk, type ChatInputMessage } from "./chat-types";
 
 let client: OpenRouter | null = null;
+
+export function isOpenRouterConfigured(): boolean {
+	return Boolean(config.openRouterApiKey);
+}
+
+export function getOpenRouterModel(): string {
+	return config.openRouterModel;
+}
 
 function getClient(): OpenRouter {
 	if (!config.openRouterApiKey) {
@@ -37,7 +28,7 @@ function getClient(): OpenRouter {
 	return client;
 }
 
-export async function sendChatCompletion(input: {
+export async function sendOpenRouterChatCompletion(input: {
 	messages: ChatInputMessage[];
 }): Promise<string> {
 	const openRouter = getClient();
@@ -58,7 +49,7 @@ export async function sendChatCompletion(input: {
 	return content;
 }
 
-export async function sendChatCompletionStream(input: {
+export async function sendOpenRouterChatCompletionStream(input: {
 	messages: ChatInputMessage[];
 	signal?: AbortSignal;
 }): Promise<AsyncIterable<ChatCompletionStreamChunk>> {

@@ -10,4 +10,8 @@ export const config = {
 	openRouterReferer: Bun.env.OPENROUTER_REFERER,
 	openRouterTitle: Bun.env.OPENROUTER_TITLE,
 	openRouterModel: Bun.env.OPENROUTER_MODEL ?? "deepseek/deepseek-chat-v3-0324:free",
+	groqApiKey: Bun.env.GROQ_API_KEY,
+	groqModel: Bun.env.GROQ_MODEL ?? "openai/gpt-oss-20b",
+	cerebrasApiKey: Bun.env.CEREBRAS_API_KEY,
+	cerebrasModel: Bun.env.CEREBRAS_MODEL ?? "llama3.1-8b",
 };

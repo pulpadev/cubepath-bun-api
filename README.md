@@ -1,6 +1,6 @@
 # cubepath-bun-api
 
-API minima con Bun y OpenRouter.
+API minima con Bun y multiples proveedores LLM en round robin.
 
 ## Ejecutar
 
@@ -16,8 +16,20 @@ Variables de entorno:
 - `OPENROUTER_MODEL` opcional. El backend usa siempre este valor. Por defecto: `deepseek/deepseek-chat-v3-0324:free`
 - `OPENROUTER_REFERER` opcional
 - `OPENROUTER_TITLE` opcional
+- `GROQ_API_KEY` opcional
+- `GROQ_MODEL` opcional. Por defecto: `openai/gpt-oss-20b`
+- `CEREBRAS_API_KEY` opcional
+- `CEREBRAS_MODEL` opcional. Por defecto: `llama3.1-8b`
 - `PORT` opcional
 - `IDLE_TIMEOUT_SECONDS` opcional. Por defecto: `255`
+
+`/chat` usa round robin entre los proveedores configurados en este orden:
+
+1. `openrouter`
+2. `groq`
+3. `cerebras`
+
+Si falta la API key de un proveedor, ese proveedor se omite de la rotacion.
 
 ## Endpoint
 
@@ -46,7 +58,7 @@ curl -X POST http://localhost:3000/chat \
 
 El endpoint devuelve `text/event-stream` con eventos:
 
-- `start`: metadatos iniciales
+- `start`: metadatos iniciales, incluyendo `provider` y `model`
 - `token`: fragmentos de texto a medida que llegan
 - `end`: fin de la respuesta
 - `error`: error durante el stream
