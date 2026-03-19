@@ -3,6 +3,7 @@ import { config } from "./src/config";
 
 const server = Bun.serve({
 	port: config.port,
+	idleTimeout: config.idleTimeout,
 	fetch: app.fetch,
 });
 

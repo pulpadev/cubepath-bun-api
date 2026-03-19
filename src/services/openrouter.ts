@@ -6,6 +6,19 @@ export type ChatInputMessage = {
 	content: string;
 };
 
+export type ChatCompletionStreamChunk = {
+	choices: Array<{
+		delta: {
+			content?: string | null;
+		};
+		finishReason?: unknown;
+	}>;
+	error?: {
+		message: string;
+		code: number;
+	};
+};
+
 let client: OpenRouter | null = null;
 
 function getClient(): OpenRouter {
@@ -44,4 +57,25 @@ export async function sendChatCompletion(input: {
 	}
 
 	return content;
+}
+
+export async function sendChatCompletionStream(input: {
+	messages: ChatInputMessage[];
+	model?: string;
+	signal?: AbortSignal;
+}): Promise<AsyncIterable<ChatCompletionStreamChunk>> {
+	const openRouter = getClient();
+
+	return openRouter.chat.send(
+		{
+			chatGenerationParams: {
+				model: input.model ?? config.openRouterModel,
+				messages: input.messages,
+				stream: true,
+			},
+		},
+		{
+			signal: input.signal,
+		},
+	);
 }
