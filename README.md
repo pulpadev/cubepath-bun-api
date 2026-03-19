@@ -1,2 +1,21 @@
 # cubepath-bun-api
-api de bun de prueba
+
+API minima con Bun.
+
+## Ejecutar
+
+```bash
+bun run start
+```
+
+## Endpoint
+
+- `GET /health`
+
+Respuesta esperada:
+
+```json
+{
+	"status": "ok"
+}
+```
