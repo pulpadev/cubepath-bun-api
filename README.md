@@ -13,7 +13,7 @@ Abre [http://localhost:3000](http://localhost:3000) para usar el cliente HTML de
 Variables de entorno:
 
 - `OPENROUTER_API_KEY` obligatoria
-- `OPENROUTER_MODEL` opcional. Por defecto: `deepseek/deepseek-chat-v3-0324:free`
+- `OPENROUTER_MODEL` opcional. El backend usa siempre este valor. Por defecto: `deepseek/deepseek-chat-v3-0324:free`
 - `OPENROUTER_REFERER` opcional
 - `OPENROUTER_TITLE` opcional
 - `PORT` opcional
@@ -79,11 +79,10 @@ while (reader) {
 }
 ```
 
-Tambien acepta `messages` y `model` en el body:
+Tambien acepta `messages` en el body:
 
 ```json
 {
-	"model": "deepseek/deepseek-chat-v3-0324:free",
 	"messages": [
 		{
 			"role": "user",

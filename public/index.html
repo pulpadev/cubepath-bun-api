@@ -99,8 +99,7 @@
         margin-bottom: 8px;
       }
 
-      textarea,
-      input {
+      textarea {
         width: 100%;
         border: 1px solid rgba(30, 26, 23, 0.14);
         border-radius: 16px;
@@ -118,7 +117,7 @@
       }
 
       textarea:focus,
-      input:focus {
+      textarea:focus {
         border-color: var(--accent);
         background: #fff;
         transform: translateY(-1px);
@@ -242,11 +241,6 @@
       <section class="layout">
         <form class="controls" id="chat-form">
           <div class="field">
-            <label for="model">Modelo opcional</label>
-            <input id="model" name="model" placeholder="deepseek/deepseek-chat-v3-0324:free" />
-          </div>
-
-          <div class="field">
             <label for="message">Prompt</label>
             <textarea id="message" name="message" placeholder="Escribe una pregunta..."></textarea>
           </div>
@@ -257,6 +251,7 @@
           </div>
 
           <div class="status" id="status">Listo para enviar.</div>
+          <div class="hint">El modelo lo define el servidor mediante <strong>OPENROUTER_MODEL</strong>.</div>
         </form>
 
         <section class="output">
@@ -274,7 +269,6 @@
     <script>
       const form = document.getElementById("chat-form");
       const messageInput = document.getElementById("message");
-      const modelInput = document.getElementById("model");
       const result = document.getElementById("result");
       const status = document.getElementById("status");
       const streamState = document.getElementById("stream-state");
@@ -375,7 +369,6 @@
         event.preventDefault();
 
         const message = messageInput.value.trim();
-        const model = modelInput.value.trim();
 
         if (!message) {
           status.textContent = "Escribe un prompt antes de enviar.";
@@ -389,19 +382,13 @@
         setBusy(true);
 
         try {
-          const payload = { message };
-
-          if (model) {
-            payload.model = model;
-          }
-
           const response = await fetch("/chat", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               Accept: "text/event-stream",
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ message }),
             signal: abortController.signal,
           });
 

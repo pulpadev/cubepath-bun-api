@@ -1,10 +1,10 @@
+import { config } from "../config";
 import { sendChatCompletionStream, type ChatInputMessage } from "../services/openrouter";
 import { createSseResponse, encodeSseEvent, errorResponse, readJsonBody } from "../utils/http";
 
 type ChatBody = {
 	message?: string;
 	messages?: ChatInputMessage[];
-	model?: string;
 };
 
 function normalizeMessages(body: ChatBody): ChatInputMessage[] {
@@ -38,7 +38,6 @@ export async function handleChat(request: Request): Promise<Response> {
 
 		const completionStream = await sendChatCompletionStream({
 			messages,
-			model: body.model,
 			signal: request.signal,
 		});
 
@@ -47,7 +46,7 @@ export async function handleChat(request: Request): Promise<Response> {
 				try {
 					controller.enqueue(
 						encodeSseEvent("start", {
-							model: body.model,
+							model: config.openRouterModel,
 						}),
 					);
 

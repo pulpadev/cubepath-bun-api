@@ -39,12 +39,11 @@ function getClient(): OpenRouter {
 
 export async function sendChatCompletion(input: {
 	messages: ChatInputMessage[];
-	model?: string;
 }): Promise<string> {
 	const openRouter = getClient();
 	const completion = await openRouter.chat.send({
 		chatGenerationParams: {
-			model: input.model ?? config.openRouterModel,
+			model: config.openRouterModel,
 			messages: input.messages,
 			stream: false,
 		},
@@ -61,7 +60,6 @@ export async function sendChatCompletion(input: {
 
 export async function sendChatCompletionStream(input: {
 	messages: ChatInputMessage[];
-	model?: string;
 	signal?: AbortSignal;
 }): Promise<AsyncIterable<ChatCompletionStreamChunk>> {
 	const openRouter = getClient();
@@ -69,7 +67,7 @@ export async function sendChatCompletionStream(input: {
 	return openRouter.chat.send(
 		{
 			chatGenerationParams: {
-				model: input.model ?? config.openRouterModel,
+				model: config.openRouterModel,
 				messages: input.messages,
 				stream: true,
 			},
